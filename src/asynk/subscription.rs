@@ -3,6 +3,8 @@ use std::io;
 use std::pin::Pin;
 use std::task::{Context, Poll};
 
+use channel::RecvError;
+
 use crate::asynk::client::Client;
 use crate::asynk::message::Message;
 use crate::smol::channel;
@@ -51,6 +53,11 @@ impl Subscription {
         self.messages.close();
         Ok(())
     }
+    /// Get Async Message 
+    pub async fn message(&self) -> Result<Message, RecvError> {
+        self.messages.recv().await
+    }
+
 
     /// Stops listening for new messages and discards the remaining queued messages.
     pub async fn unsubscribe(&self) -> io::Result<()> {
